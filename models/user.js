@@ -1,9 +1,11 @@
 const mongoose = require('mongoose');
+const uuid4 = require('uuid4');
 
 // Define schema
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
+    default:uuid4(),
   },
   age: {
     type: Number,

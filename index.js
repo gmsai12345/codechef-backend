@@ -5,6 +5,11 @@ const Appointment = require('./models/appoinment');
 const Doctor = require('./models/doctor');
 const Hospital = require('./models/hospital');
 const User = require('./models/user');
+const MedicalOrder = require('./models/medicalorder');
+const Product = require('./models/product');
+const Order = require('./models/user');
+
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 const CONNECTION_URL = "mongodb+srv://saidhakshan4:Sai%4012345@cluster0.qtbhurf.mongodb.net/";
@@ -21,7 +26,99 @@ app.get('/api/appoinments', async (req, res) => {
       res.status(400).json({ success: false, error: error.message });
     }
   });
-  app.get('/api/appoinments/:id', async (req, res) => {
+  app.get('/api/products', async (req, res) => {
+    try {
+      // Retrieve all products from the database
+      const products = await Product.find();
+  
+      res.status(200).json(products);
+    } catch (error) {
+      console.error('Error retrieving products:', error);
+      res.status(500).json({ message: 'Error retrieving products' });
+    }
+  });
+  
+  // Route to get a product by name
+  app.get('/api/products/:name', async (req, res) => {
+    try {
+      const name = req.params.name;
+  
+      // Retrieve the product from the database by name
+      const product = await Product.findOne({ name });
+  
+      if (!product) {
+        return res.status(404).json({ message: 'Product not found' });
+      }
+  
+      res.status(200).json(product);
+    } catch (error) {
+      console.error('Error retrieving product by name:', error);
+      res.status(500).json({ message: 'Error retrieving product by name' });
+    }
+  });
+  
+  // Route to create a new product
+  app.post('/api/products', async (req, res) => {
+    try {
+      const { productId, name, description, price } = req.body;
+  
+      // Create a new product instance
+      const product = new Product({
+        productId,
+        name,
+        description,
+        price
+      });
+  
+      // Save the product to the database
+      await product.save();
+  
+      res.status(201).json({ message: 'Product created successfully', product });
+    } catch (error) {
+      console.error('Error creating product:', error);
+      res.status(500).json({ message: 'Error creating product' });
+    }
+  });
+  app.post('/api/orders', async (req, res) => {
+    try {
+      const { orderId, userId, serviceIds } = req.body;
+  
+      // Create a new order instance
+      const order = new Order({
+        orderId,
+        userId,
+        serviceIds
+      });
+  
+      // Save the order to the database
+      await order.save();
+  
+      res.status(201).json({ message: 'Order created successfully', order });
+    } catch (error) {
+      console.error('Error creating order:', error);
+      res.status(500).json({ message: 'Error creating order' });
+    }
+  });
+  
+  // Route to get orders by user ID
+  app.get('/api/orders/:userId', async (req, res) => {
+    try {
+      const userId = req.params.userId;
+  
+      // Retrieve orders from the database by user ID
+      const orders = await Order.find({ userId });
+  
+      if (orders.length === 0) {
+        return res.status(404).json({ message: 'Orders not found for the user ID' });
+      }
+  
+      res.status(200).json(orders);
+    } catch (error) {
+      console.error('Error retrieving orders by user ID:', error);
+      res.status(500).json({ message: 'Error retrieving orders by user ID' });
+    }
+  });
+  app.get('/api/appoinments/id', async (req, res) => {
     try {
       // Fetch all appointments
       const id = req.query();
@@ -31,6 +128,27 @@ app.get('/api/appoinments', async (req, res) => {
       res.status(400).json({ success: false, error: error.message });
     }
   });
+  app.post('/api/medicalorders', async (req, res) => {
+    try {
+      const { orderId, userId, productIds } = req.body;
+  
+      // Create a new medical order instance
+      const medicalOrder = new MedicalOrder({
+        orderId,
+        userId,
+        productIds
+      });
+  
+      // Save the medical order to the database
+      await medicalOrder.save();
+  
+      res.status(201).json({ message: 'Medical order created successfully', medicalOrder });
+    } catch (error) {
+      console.error('Error creating medical order:', error);
+      res.status(500).json({ message: 'Error creating medical order' });
+    }
+  });
+  
   app.post('/api/users', async (req, res) => {
     try {
       // Create a new user based on the request body
@@ -59,8 +177,8 @@ app.post('/api/appoinments', async (req, res) => {
       res.status(400).json({ success: false, error: error.message });
     }
   });
-  app.get('/api/doctors/:specialization', async (req, res) => {
-    const { specialization } = req.params;
+  app.get('/api/doctors/specialization', async (req, res) => {
+    const { specialization } = req.query;
     
     try {
       // Fetch doctors by specialization
@@ -70,8 +188,8 @@ app.post('/api/appoinments', async (req, res) => {
       res.status(400).json({ success: false, error: error.message });
     }
   });
-  app.get('/api/hospitals/:serviceId', async (req, res) => {
-    const { serviceId } = req.params;
+  app.get('/api/hospitals/serviceId', async (req, res) => {
+    const { serviceId } = req.query;
     
     try {
       // Fetch hospitals by serviceId

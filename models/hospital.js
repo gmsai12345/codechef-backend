@@ -1,9 +1,11 @@
 const mongoose = require('mongoose');
+const uuid4 = require('uuid4');
 
 // Define schema
 const hospitalSchema = new mongoose.Schema({
   id: {
     type: String,
+    default:uuid4(),
     required: true,
     unique: true
   },
