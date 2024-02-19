@@ -8,11 +8,12 @@ const User = require('./models/user');
 const MedicalOrder = require('./models/medicalorder');
 const Product = require('./models/product');
 const Order = require('./models/user');
+require('dotenv').config();
 
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const CONNECTION_URL = "mongodb+srv://saidhakshan4:Sai%4012345@cluster0.qtbhurf.mongodb.net/";
+const CONNECTION_URL = process.env.MONGODB_URI;
 
 app.use(express.json({ limit: "30mb", extended: true }));
 app.use(express.urlencoded({ limit: "30mb", extended: true }));
