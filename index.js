@@ -119,10 +119,10 @@ app.get('/api/appoinments', async (req, res) => {
       res.status(500).json({ message: 'Error retrieving orders by user ID' });
     }
   });
-  app.get('/api/appoinments/id', async (req, res) => {
+  app.get('/api/appoinments/:id', async (req, res) => {
     try {
       // Fetch all appointments
-      const id = req.query();
+      const id = req.params();
       const appointments = await Appointment.findOne(id);
       res.status(200).json({ success: true, data: appointments });
     } catch (error) {
