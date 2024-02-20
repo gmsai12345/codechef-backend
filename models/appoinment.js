@@ -13,6 +13,11 @@ const AppointmentSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
+ doctor_id: {
+    type: String,
+    ref: 'User',
+    required: true
+  },
   title: {
     type: String,
     required: true
