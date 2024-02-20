@@ -19,6 +19,16 @@ const CONNECTION_URL = process.env.MONGODB_URI;
 app.use(express.json({ limit: "30mb", extended: true }));
 app.use(express.urlencoded({ limit: "30mb", extended: true }));
 app.use(cors());
+app.get('/api/hospitals', async (req, res) => {
+  try {
+    // Fetch all appointments
+    const name  = req.query();
+    const hospital = await Hospital.findOne({title:name});
+    res.status(200).json({ success: true, data: hospital });
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
 app.get('/api/appoinments', async (req, res) => {
     try {
       // Fetch all appointments
