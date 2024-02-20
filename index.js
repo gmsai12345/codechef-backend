@@ -7,7 +7,8 @@ const Hospital = require('./models/hospital');
 const User = require('./models/user');
 const MedicalOrder = require('./models/medicalorder');
 const Product = require('./models/product');
-const Order = require('./models/user');
+const Order = require('./models/orders');
+const DiagnosticCentre = require('./models/diagnosticCentre')
 require('dotenv').config();
 
 
@@ -159,7 +160,16 @@ app.get('/api/appoinments', async (req, res) => {
       res.status(400).json({ success: false, error: error.message });
     }
   });
-  
+
+  app.post('/api/doctors', async (req, res) => {
+    try {
+      // Create a new appointment based on the request body
+      const doctor = await Doctor.create(req.body);
+      res.status(201).json({ success: true, data: doctor });
+    } catch (error) {
+      res.status(400).json({ success: false, error: error.message });
+    }
+  });
 app.post('/api/appoinments', async (req, res) => {
     try {
       // Create a new appointment based on the request body
@@ -234,6 +244,41 @@ mongoose.connect(CONNECTION_URL, { useNewUrlParser: true, useUnifiedTopology: tr
   .catch((error) => {
     console.error("Error connecting to MongoDB:", error);
   });
+  app.post('/api/diagnostic-centers', async (req, res) => {
+    try {
+        // Create a new diagnostic center based on the request body
+        const diagnosticCentre = await DiagnosticCentre.create(req.body);
+        res.status(201).json({ success: true, data: diagnosticCentre });
+    } catch (error) {
+        res.status(400).json({ success: false, error: error.message });
+    }
+});
+
+// GET endpoint to get all diagnostic centers
+app.get('/api/diagnostic-centers', async (req, res) => {
+    try {
+        const diagnosticCentres = await DiagnosticCentre.find();
+        res.status(200).json({ success: true, data: diagnosticCentres });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// GET endpoint to get diagnostic centers by name
+app.get('/api/diagnostic-centers/:name', async (req, res) => {
+    const name = req.params.name;
+    try {
+        const diagnosticCentres = await DiagnosticCentre.find({ centername: name });
+        if (diagnosticCentres.length === 0) {
+            res.status(404).json({ success: false, message: 'Diagnostic center not found' });
+        } else {
+            res.status(200).json({ success: true, data: diagnosticCentres });
+        }
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 
 // Define routes
 app.get('/', (req, res) => {
